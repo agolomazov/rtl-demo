@@ -1,24 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
 import './App.css';
+import { fetchUsers } from './store/reducers/ActionCreators';
+import { useAppDispatch, useAppSelector } from './store/hooks/redux';
+import { PostContainer } from './components/PostContainer';
 
 function App() {
+  const dispatch = useAppDispatch();
+  const { users, isLoading, error } = useAppSelector((state) => state.users);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+    console.log('mount App component');
+  }, [dispatch]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Test Application</h1>
+      {isLoading && <p>Loading...</p>}
+      {!isLoading && error && <p>{error}</p>}
+      {!isLoading &&
+        users.map((user) => (
+          <p key={user.id}>
+            {user.name} <a href={`mailto:${user.email}`}>{user.email}</a>
+          </p>
+        ))}
+      <PostContainer />
     </div>
   );
 }
